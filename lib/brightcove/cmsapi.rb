@@ -65,6 +65,26 @@ module Brightcove
       resources
     end
 
+    def post(path, json_body)
+      set_token if @token_expires < Time.now
+      response = HTTP.auth("Bearer #{@token}").post("#{@base_url}/#{path}", json: json_body)
+
+      case response.code
+      when 200 # OK
+        response
+      when 401 # Unauthorized, token expired
+        set_token
+        response = HTTP.auth("Bearer #{@token}").get("#{@base_url}/#{path}")
+
+        # if a fresh token still returns 401 the request must be unauthorized
+        raise_account_error if response.code == 401
+
+        response
+      else
+        raise CmsapiError, response.to_s
+      end
+    end
+
     private
 
     def set_token
