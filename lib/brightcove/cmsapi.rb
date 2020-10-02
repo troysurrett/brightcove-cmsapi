@@ -30,7 +30,8 @@ module Brightcove
 
     def post(path, json_body)
       set_token if @token_expires < Time.now
-      response = HTTP.auth("Bearer #{@token}").post("#{@base_url}/#{path}", json: json_body)
+
+      response = HTTP.auth("Bearer #{@token}").post("#{@base_url}/#{path}/ingest-requests", json: json_body)
 
       case response.code
       when 200 || 202 # OK
