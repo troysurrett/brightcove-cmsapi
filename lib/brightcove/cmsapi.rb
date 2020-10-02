@@ -70,7 +70,7 @@ module Brightcove
       response = HTTP.auth("Bearer #{@token}").post("#{@base_url}/#{path}", json: json_body)
 
       case response.code
-      when 200 # OK
+      when 200 || 202 # OK
         response
       when 401 # Unauthorized, token expired
         set_token
